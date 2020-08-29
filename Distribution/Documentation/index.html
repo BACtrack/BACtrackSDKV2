@@ -1,0 +1,343 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BACtrack SDK Documentation</title>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body>
+<div id="Bactrack-SDK">
+
+<ul class="nav nav-pills nav-justified">
+    <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+    <li><a href="#quickstart" data-toggle="tab">Quickstart</a></li>
+    <li><a href="#api-reference" data-toggle="tab">API Reference</a></li>
+</ul>
+
+<div class="space20"></div>
+
+<!-- Tabs -->
+<div class="tab-content">
+    
+    <!-- Home -->
+    <div class="tab-pane fade in active" id="home">
+        <div class="jumbotron">
+            <h1>Easily integrate your apps with a world-class breathalyzer.</h1>
+            <p class="lead">BACtrack makes it easy to measure a person's blood alcohol content &mdash; quickly, simply and with a high level of accuracy. Get up and running quickly with the BACtrack SDK.</p>
+        </div>
+
+
+
+        <div class="space20"></div>
+
+
+
+
+
+
+
+
+
+    </div>
+    <!-- Home -->
+    
+
+    <!-- Quickstart -->
+    <div class="tab-pane fade" id="quickstart">
+    <h1>Understanding the Sample Project</h1>
+        <p>Your app will send commands to, and receive callbacks from, BACtrack devices. In order to do this, you must first
+            initialize a BacTrackAPI object with the following command call:
+            <code>mBacTrack = [[BacTrackAPI alloc] initWithDelegate:&ltBacTrackAPIDelegate&gt AndAPIKey:@"insertAPIKeyStringHere"];</code>. This initializer method sets the specified delegate and
+            checks with our server whether the included API Key is valid. In case your app has not been approved
+            to use our SDK, the callback <code>(void)BacTrackAPIKpiKeyDeclined:(NSString *)errorMessage</code> will be called and 
+            must be implemented.
+        </p>
+        <img src="images/launchScreen.png" alt="Launch Screen">
+        <p>Once you've initialized your BacTrackAPI object, you can establish a BTLE connection between your iOS device
+            and a BACtrack by executing the following command call on the BacTrackAPI object:
+            <code>connectToNearestBreathalyzer</code>
+        </p>
+        <img src="images/mainScreen.png" alt="Main Screen">
+        <p>
+            Tapping on the "Take Test" button calls <code>startCountdown</code> on the BacTrackAPI object and initiates
+            a series of callbacks on the BacTrackAPIDelegate shown below.
+        </p>
+        <img src="images/countdown.png" alt="Countdown Screen">
+        <img src="images/blowNow.png" alt="Blow Now Screen">
+        <img src="images/keepBlowing.png" alt="Keep Blowing Screen">
+        <img src="images/analyzing.png" alt="Analyzing Results Screen">
+        <img src="images/result.png" alt="Results Screen">
+        <p>
+            The test process consists of a series of five phases.
+            At the start of every phase your
+            &ltBacTrackAPIDelegate&gt receives the following callbacks:
+            <ol>
+                <li>Warming up <code>(void)BacTrackCountdown:(NSNumber *)seconds executionFailure:(BOOL)failure</code>
+                    This callback is called many times and the &ltseconds&gt parameter is an estimated amount of seconds
+                    left until the next callback (BacTrackStart) is called.
+                </li>
+                <li>Begin Blowing<code>(void)BacTrackStart</code></li>
+                <li>Keep Blowing<code>(void)BacTrackBlow</code>
+                    This callback is called many times during the time that the user is blowing into the BACtrack.
+                </li>
+                <li>Analyzing<code>void)BacTrackAnalyzing</code>
+                    When this callback is called, the user can stop blowing.
+                </li>
+                <li>Results<code>(void)BacTrackResults:(CGFloat)bac</code></li>
+            </ol>
+        </p>
+
+    </div>
+    <!-- Quickstart -->
+
+
+    <!-- API Reference -->
+    <div class="tab-pane fade" id="api-reference">
+        <h1>BACtrack API</h1>
+        <p class="lead">These methods represent the commands you can send to a BACtrack.</p>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Initialize class</h3>
+            </div>
+            <div class="panel-body">
+                <code>-(id)initWithDelegate:(id<BacTrackAPIDelegate>)delegate AndAPIKey:(NSString*)api_key;</code>
+            </div>
+        </div>
+        
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>-(void)connectToNearestBreathalyzer</code>
+                    </td>
+                    <td>NORMAL use case for connecting to a breathalyzer. Connects to nearest BACtrack.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)startScan</code>
+                    </td>
+                    <td>Scan for BACtracks within range. To be used with connectBreathalyzer:withTimeout.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)connectBreathalyzer:(Breathalyzer*)breathalyzer<br>  withTimeout:(NSTimeInterval)timeout</code>
+                    </td>
+                    <td>ALTERNATE use case for connecting to a BACtrack. See below for explanation.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)stopScan</code>
+                    </td>
+                    <td>Stop scanning for BACtracks within range. To be used with startScan.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)disconnect</code>
+                    </td>
+                    <td>Disconnect from BACtrack</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(BOOL)startCountdown</code>
+                    </td>
+                    <td>Start BACtrack countdown to take a BAC test.</td>
+                </tr>   
+                <tr>
+                    <td>
+                        <code>-(void)getBreathalyzerBatteryLevel</code>
+                    </td>
+                    <td>Request a callback with the current battery voltage and level.</td>
+                </tr>
+            </tbody>
+        </table>
+        <h1>BACtrack API Delegate</h1>
+        <p class="lead">These methods represent all the messages you might get from the BACtrack.</p>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Required Methods</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackAPIKeyDeclined:(NSString *)errorMessage</code>
+                    </td>
+                    <td>Called if the passed in API Key is not valid.</td>
+                </tr>
+
+             
+            </tbody>
+        </table>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Optional Methods</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackAPIKeyAuthorized</code>
+                    </td>
+                    <td>Called if the passed in API Key is valid.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackConnected</code>
+                    </td>
+                    <td>Successfully connected to BACTrack and found services and characteristics.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackDisconnected</code>
+                    </td>
+                    <td>Disconnected from BACTrack.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackConnectTimeout</code>
+                    </td>
+                    <td>Attempting to connect to BACTrack timed out.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(NSTimeInterval)BacTrackGetTimeout</code>
+                    </td>
+                    <td>Asks for connection timeout when connecting to nearest BACtrack.</td>
+                </tr>   
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackCountdown:(NSNumber*)seconds<br/>executionFailure:(BOOL)error</code>
+                    </td>
+                    <td>Counting down to reading, <code>number</code> (a double) seconds left, <code>error = TRUE</code> if BAC sensor rejects request.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackStart</code>
+                    </td>
+                    <td>Tell the user to start blowing.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackBlow (DEPRECATED)</code>
+                    </td>
+                    <td>Tell the user to keep blowing. This function will not support some newer hardware.</td>
+                </tr>
+		<tr>
+                    <td>
+                        <code>-(void)BacTrackBlow:(NSNumber*)blowFractionRemaining(</code>
+                    </td>
+                    <td>Tell the user to keep blowing. The blowFractionRemaining argument is a countdown from 1.0 to 0 and may be used to display a status bar.</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackAnalyzing</code>
+                    </td>
+                    <td>BACtrack is analyzing the result.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackResults:(CGFloat)bac</code>
+                    </td>
+                    <td>Result of the blow.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackFoundBreathalyzer:(Breathalyzer*)breathalyzer</code>
+                    </td>
+                    <td>Found a breathalyzer. Call comes in for every breathalyzer found during scan.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackBatteryLevel:(NSNumber *)number</code>
+                    </td>
+                    <td>Reports battery level in the XCode console.  0 is low (needs to be charged). 1 is medium, >=2 is high.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>-(void)BacTrackError:(NSErrror *)error</code>
+                    </td>
+                    <td>Called when an error occurs. The code of the error. Codes can be looked up in the SDK header file prefixed by "MOBILE__ERROR_*".</td>
+                </tr>
+             
+            </tbody>
+        </table>
+        <h2>Other Connection Method</h2>
+
+        <p class="lead">You can connect to a BACtrack manually</p>
+
+        <p> Normally, an app will set up a BTLE connection with the nearest BACtrack using the 
+        <code>connectToNearestBreathalyzer</code> command call. However, your app might want to
+        connect with a selected BACtrack. To enable this functionality, you need to scan for nearby
+        BACtracks using the <code>startScan</code> command call. The scan runs indefinitely until
+        the command <code>stopScan</code> is called. During the scan, everytime your iOS device finds a
+        BACtrack, the callback <code>(void)BacTrackFoundBreathalyzer:(Breathalyzer*)breathalyzer</code>
+        is called. Our sample app implements this by adding the breathalyzer to a breathalyzers array, which is then
+        used as the data source for a table view that lists all the nearby breathalyzers.
+        </p>
+        <img src="images/launchScreen.png" alt="Launch Screen">
+        <img src="images/connectScreen.png" alt="Connect Screen">
+        <p>You can distinguish between breathalyzers with the following attributes:
+            <ul>
+                <li><code>Breathalyzer.perpipheral.name</code></li>
+                <li><code>Breathalyzer.uuid</code></li>
+            </ul>
+            After isolating the Breathalyzer object that you want, you can connect with it by providing the Breathalyzer
+            object as an argument to the following command call:
+            <code>(void)connectBreathalyzer:(Breathalyzer*)breathalyzer withTimeout:(NSTimeInterval)timeout</code>
+        </p>
+
+        <h1>Installation</h1>
+        <ol>
+
+        <li>The BACtrack API consists of a static library (.a file) and a header file (.h file). To use our SDK, your
+            app must link with our static library.
+        </li>
+
+        <img class="resize" src="images/addlibrary.png" alt="Add a library">
+
+        <li>
+            Lastly, in Build Settings &gt Linking &gt Other Linker Flags, add the following flags:
+            <ul>
+                <li>-ObjC</li>
+                <li>-all_load</li>
+            </ul>
+            <img src="images/linkerFlags.png" alt="Linker Flags">
+
+        </li>
+        </ol>
+    </div>
+    <!-- API Reference -->
+    
+</div>
+<!-- Tabs -->
+    
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

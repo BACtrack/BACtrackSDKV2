@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		494589DB19DCCA8600A33E62 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 49AFDB1819DB515400EB71A9 /* AppDelegate.m */; };
+		494589DC19DCCA8900A33E62 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49AFDAAE19DB3D0400EB71A9 /* main.m */; };
+		494589DD19DCCA8F00A33E62 /* MainScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 49AFDAD719DB411600EB71A9 /* MainScreen.m */; };
+		494C27CB19DF180000115E72 /* MainScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 494C27CA19DF180000115E72 /* MainScreen.xib */; };
+		4953FB4619DCAA7B00E2F5B0 /* MainScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = 49AFDAD919DB412800EB71A9 /* MainScreen.h */; };
+		4953FB4719DCAA7D00E2F5B0 /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 49AFDB1719DB515400EB71A9 /* AppDelegate.h */; };
+		4953FB4819DCAA8600E2F5B0 /* BACtrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 49AFDAE419DB48D200EB71A9 /* BACtrack.h */; };
+		498C5A711A02EE0B002BC18A /* BreathalyzerListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 498C5A701A02EE0B002BC18A /* BreathalyzerListCell.m */; };
+		498C5A731A02EE16002BC18A /* BreathalyzerListCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 498C5A721A02EE16002BC18A /* BreathalyzerListCell.h */; };
+		498C5A751A02EE20002BC18A /* BreathalyzerListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 498C5A741A02EE20002BC18A /* BreathalyzerListCell.xib */; };
+		49AFDABA19DB3D0400EB71A9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49AFDAB919DB3D0400EB71A9 /* Images.xcassets */; };
+		49AFDADB19DB459600EB71A9 /* home-mob-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 49AFDADA19DB459500EB71A9 /* home-mob-01.png */; };
+		49AFDADD19DB45A500EB71A9 /* home-vio-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 49AFDADC19DB45A500EB71A9 /* home-vio-01.png */; };
+		5670CB281C7E4C53001B5731 /* libBACtrackSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5670CB271C7E4C53001B5731 /* libBACtrackSDK.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		494C27CA19DF180000115E72 /* MainScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainScreen.xib; sourceTree = "<group>"; };
+		494E702319DCAF4200A7B07F /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		498C5A701A02EE0B002BC18A /* BreathalyzerListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BreathalyzerListCell.m; sourceTree = "<group>"; };
+		498C5A721A02EE16002BC18A /* BreathalyzerListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BreathalyzerListCell.h; sourceTree = "<group>"; };
+		498C5A741A02EE20002BC18A /* BreathalyzerListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BreathalyzerListCell.xib; sourceTree = "<group>"; };
+		49AFDAA919DB3D0400EB71A9 /* BACtrackSDKDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BACtrackSDKDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49AFDAAE19DB3D0400EB71A9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		49AFDAB919DB3D0400EB71A9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		49AFDABC19DB3D0400EB71A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		49AFDAD719DB411600EB71A9 /* MainScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreen.m; sourceTree = "<group>"; };
+		49AFDAD919DB412800EB71A9 /* MainScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreen.h; sourceTree = "<group>"; };
+		49AFDADA19DB459500EB71A9 /* home-mob-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "home-mob-01.png"; sourceTree = "<group>"; };
+		49AFDADC19DB45A500EB71A9 /* home-vio-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "home-vio-01.png"; sourceTree = "<group>"; };
+		49AFDAE419DB48D200EB71A9 /* BACtrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BACtrack.h; path = ../../../BACtrack.h; sourceTree = "<group>"; };
+		49AFDB1719DB515400EB71A9 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		49AFDB1819DB515400EB71A9 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5670CB271C7E4C53001B5731 /* libBACtrackSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBACtrackSDK.a; path = ../../../libBACtrackSDK.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49AFDAA619DB3D0400EB71A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5670CB281C7E4C53001B5731 /* libBACtrackSDK.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		494589DA19DCC20500A33E62 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDAE019DB487F00EB71A9 /* LaunchScreen */,
+			);
+			name = Base.lproj;
+			sourceTree = "<group>";
+		};
+		49AFDAA019DB3D0400EB71A9 = {
+			isa = PBXGroup;
+			children = (
+				49AFDAAB19DB3D0400EB71A9 /* BACtrackSDKDemo */,
+				49AFDAAA19DB3D0400EB71A9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49AFDAAA19DB3D0400EB71A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDAA919DB3D0400EB71A9 /* BACtrackSDKDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49AFDAAB19DB3D0400EB71A9 /* BACtrackSDKDemo */ = {
+			isa = PBXGroup;
+			children = (
+				494589DA19DCC20500A33E62 /* Base.lproj */,
+				49AFDADE19DB47A100EB71A9 /* MainScreen */,
+				49AFDAE119DB489C00EB71A9 /* BACtrackSDK */,
+				49AFDAAC19DB3D0400EB71A9 /* Supporting Files */,
+				49AFDADF19DB47B000EB71A9 /* Resources */,
+				49AFDAB919DB3D0400EB71A9 /* Images.xcassets */,
+			);
+			path = BACtrackSDKDemo;
+			sourceTree = "<group>";
+		};
+		49AFDAAC19DB3D0400EB71A9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDB1719DB515400EB71A9 /* AppDelegate.h */,
+				49AFDB1819DB515400EB71A9 /* AppDelegate.m */,
+				49AFDAAE19DB3D0400EB71A9 /* main.m */,
+				494E702319DCAF4200A7B07F /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		49AFDADE19DB47A100EB71A9 /* MainScreen */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDAD919DB412800EB71A9 /* MainScreen.h */,
+				49AFDAD719DB411600EB71A9 /* MainScreen.m */,
+				494C27CA19DF180000115E72 /* MainScreen.xib */,
+				498C5A721A02EE16002BC18A /* BreathalyzerListCell.h */,
+				498C5A701A02EE0B002BC18A /* BreathalyzerListCell.m */,
+				498C5A741A02EE20002BC18A /* BreathalyzerListCell.xib */,
+			);
+			name = MainScreen;
+			sourceTree = "<group>";
+		};
+		49AFDADF19DB47B000EB71A9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDADA19DB459500EB71A9 /* home-mob-01.png */,
+				49AFDADC19DB45A500EB71A9 /* home-vio-01.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		49AFDAE019DB487F00EB71A9 /* LaunchScreen */ = {
+			isa = PBXGroup;
+			children = (
+				49AFDABB19DB3D0400EB71A9 /* LaunchScreen.xib */,
+			);
+			name = LaunchScreen;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		49AFDAE119DB489C00EB71A9 /* BACtrackSDK */ = {
+			isa = PBXGroup;
+			children = (
+				5670CB271C7E4C53001B5731 /* libBACtrackSDK.a */,
+				49AFDAE419DB48D200EB71A9 /* BACtrack.h */,
+			);
+			name = BACtrackSDK;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4953FB4519DCAA7600E2F5B0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				498C5A731A02EE16002BC18A /* BreathalyzerListCell.h in Headers */,
+				4953FB4619DCAA7B00E2F5B0 /* MainScreen.h in Headers */,
+				4953FB4719DCAA7D00E2F5B0 /* AppDelegate.h in Headers */,
+				4953FB4819DCAA8600E2F5B0 /* BACtrack.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		49AFDAA819DB3D0400EB71A9 /* BACtrackSDKDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49AFDACC19DB3D0500EB71A9 /* Build configuration list for PBXNativeTarget "BACtrackSDKDemo" */;
+			buildPhases = (
+				49AFDAA519DB3D0400EB71A9 /* Sources */,
+				49AFDAA619DB3D0400EB71A9 /* Frameworks */,
+				49AFDAA719DB3D0400EB71A9 /* Resources */,
+				4953FB4519DCAA7600E2F5B0 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BACtrackSDKDemo;
+			productName = BACtrackSDKDemo;
+			productReference = 49AFDAA919DB3D0400EB71A9 /* BACtrackSDKDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49AFDAA119DB3D0400EB71A9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = BACtrack;
+				TargetAttributes = {
+					49AFDAA819DB3D0400EB71A9 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+				};
+			};
+			buildConfigurationList = 49AFDAA419DB3D0400EB71A9 /* Build configuration list for PBXProject "BACtrackSDKDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+				Base,
+			);
+			mainGroup = 49AFDAA019DB3D0400EB71A9;
+			productRefGroup = 49AFDAAA19DB3D0400EB71A9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				49AFDAA819DB3D0400EB71A9 /* BACtrackSDKDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49AFDAA719DB3D0400EB71A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				498C5A751A02EE20002BC18A /* BreathalyzerListCell.xib in Resources */,
+				49AFDADB19DB459600EB71A9 /* home-mob-01.png in Resources */,
+				494C27CB19DF180000115E72 /* MainScreen.xib in Resources */,
+				49AFDADD19DB45A500EB71A9 /* home-vio-01.png in Resources */,
+				49AFDABA19DB3D0400EB71A9 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49AFDAA519DB3D0400EB71A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				494589DC19DCCA8900A33E62 /* main.m in Sources */,
+				498C5A711A02EE0B002BC18A /* BreathalyzerListCell.m in Sources */,
+				494589DB19DCCA8600A33E62 /* AppDelegate.m in Sources */,
+				494589DD19DCCA8F00A33E62 /* MainScreen.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		49AFDABB19DB3D0400EB71A9 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				49AFDABC19DB3D0400EB71A9 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			path = BACtrackSDKDemo;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49AFDACA19DB3D0500EB71A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		49AFDACB19DB3D0500EB71A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		49AFDACD19DB3D0500EB71A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 200622.14;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = BACtrackSDKDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../..",
+					"$(PROJECT_DIR)/BACtrackSDKDemo",
+				);
+				MARKETING_VERSION = 2.2.9;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BACtrackSDKDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "arm64 armv7 armv7s, i386";
+			};
+			name = Debug;
+		};
+		49AFDACE19DB3D0500EB71A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 200622.14;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = BACtrackSDKDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../..",
+					"$(PROJECT_DIR)/BACtrackSDKDemo",
+				);
+				MARKETING_VERSION = 2.2.9;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BACtrackSDKDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "arm64 armv7 armv7s, i386";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49AFDAA419DB3D0400EB71A9 /* Build configuration list for PBXProject "BACtrackSDKDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49AFDACA19DB3D0500EB71A9 /* Debug */,
+				49AFDACB19DB3D0500EB71A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49AFDACC19DB3D0500EB71A9 /* Build configuration list for PBXNativeTarget "BACtrackSDKDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49AFDACD19DB3D0500EB71A9 /* Debug */,
+				49AFDACE19DB3D0500EB71A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49AFDAA119DB3D0400EB71A9 /* Project object */;
+}

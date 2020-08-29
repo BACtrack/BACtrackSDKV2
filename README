@@ -1,0 +1,73 @@
+Where Everything Is
+-------------------
+SDK Project: BACtrack SDK.xcodeproj
+Source files: Next to this README
+The SDK files we distribute: Distribution/ directory (please keep the .a file in here updated as you build releases, and note in the commit message which version it is)
+
+
+
+Building the Demo Project
+-------------------------
+- Make sure the .a file is the version you want to test (this is why I say to keep it updated)
+- In the build settings, select a valid provisioning profile
+- Fill out the API key in MainScreen.m. Look for this line:
+    mBacTrack = [[BacTrackAPI alloc] initWithDelegate:self AndAPIKey:@"insertBacTrackAPIKeyStringHere"];
+(you can find the APIKey in trackview or bactrack mobile)
+- Build! (I'd suggest Release, but it doesn't really matter here; we are not distributing a binary of the demo project)
+- DO NOT CHECK IN THE PROJECT OR MAINSCREEN.M IN WITH YOUR PROVISIONING PROFILE OR APIKEY (see below)
+
+
+
+Building the Shared Object
+--------------------------
+- Select BACtrack target
+- Shift-Command-Comma: Set the project to Release. MAKE SURE IT'S RELEASE. Do NOT do a Debug build.
+- Select an iOS device
+- Build
+- Right-click the libBACTrack.a file and select "show in finder"
+- Drag this .a to a new folder (somewhere convenient)
+- Select a Simulator device
+- Build
+- Right-click the libBACTrack.a file and select "show in finder"
+- Drag this .a to the same folder. When prompted to overwrite, select "keep both". This file will be renamed to "libBACtrack.a copy"
+- Use lipo to fuse both of these together:
+	lipo libBACtrack.a libBACtrack.a\ copy  -create -output /tmp/libBACtrack.a
+
+/tmp/libBACtrack.a will now contain a fat binary with both x86 (for simulators) and ARM (for your devices)
+
+Here's how it should look:
+
+retronymss-iMac:bactrax louis$ file libBACtrack.a
+libBACtrack.a: Mach-O universal binary with 2 architectures: [arm_v7:current ar archive] [arm64:current ar archive]
+libBACtrack.a (for architecture armv7):	current ar archive
+libBACtrack.a (for architecture arm64):	current ar archive
+retronymss-iMac:bactrax louis$ file libBACtrack.a\ copy 
+libBACtrack.a copy: Mach-O universal binary with 2 architectures: [i386:current ar archive] [x86_64:current ar archive]
+libBACtrack.a copy (for architecture i386):	current ar archive
+libBACtrack.a copy (for architecture x86_64):	current ar archive
+retronymss-iMac:bactrax louis$ lipo libBACtrack.a libBACtrack.a\ copy  -create -output /tmp/libBACtrack.a
+retronymss-iMac:bactrax louis$ file libBACtrack.a\ copy 
+retronymss-iMac:bactrax louis$ file /tmp/libBACtrack.a 
+/tmp/libBACtrack.a: Mach-O universal binary with 4 architectures: [arm_v7:current ar archive] [i386:current ar archive] [x86_64] [arm64]
+/tmp/libBACtrack.a (for architecture armv7):	current ar archive
+/tmp/libBACtrack.a (for architecture i386):	current ar archive
+/tmp/libBACtrack.a (for architecture x86_64):	current ar archive
+/tmp/libBACtrack.a (for architecture arm64):	current ar archive
+
+- Copy this .a file into the Distribution/ folder in this git repo. This repo also contains a demo project useful for testing.
+- CHECK TO MAKE SURE THE APIKEY IS NOT IN THE DISTRIBUTION SOURCE CODE. MainScreen.m should have this line:
+    mBacTrack = [[BacTrackAPI alloc] initWithDelegate:self AndAPIKey:@"insertBacTrackAPIKeyStringHere"];
+
+- CHECK TO MAKE SURE NO PROVISIONING PROFILE IS LISTED IN THE PROJECT SETTINGS.
+
+"git diff" is very useful for checking these two things
+
+- Copy or rename Distribution to the name of the new archive (e.g. BACtrack_v2.2.7_iOS_SDK) so that it looks ok when unzipped.
+
+- Zip it up and put it on the site! It is likely safest to get the zip from the site, pop the new .a in, 
+  and then zip it back up. Be sure if anything else besides the .a changes that you keep Distribution up to date as well.
+
+
+
+
+
