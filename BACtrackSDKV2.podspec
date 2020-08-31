@@ -92,8 +92,9 @@ Pod::Spec.new do |spec|
 
   # spec.source_files  = "Classes", "Classes/**/*.{h,m}"
   # spec.source_files  = "bactrack-ios-sdk/**/*.{h,m}"
-  spec.source_files  = "**/*"
+  spec.source_files  = "**/*.{h,m}"
   # spec.exclude_files = "Classes/Exclude"
+  # spec.exclude_files = "BACtrackReactBLEManager.h"
 
   # spec.public_header_files = "Classes/**/*.h"
 
@@ -135,5 +136,5 @@ Pod::Spec.new do |spec|
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # spec.dependency "JSONKit", "~> 1.4"
-
+  # spec.dependency "React"
 end

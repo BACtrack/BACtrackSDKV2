@@ -1,0 +1,6 @@
+framework module Pods_BACtrack {
+  umbrella header "Pods-BACtrack-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		5657A9171C6EB5F0006FAF9B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5657A9161C6EB5F0006FAF9B /* SystemConfiguration.framework */; };
 		5657A91B1C6EB6C3006FAF9B /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5657A91A1C6EB6C3006FAF9B /* Reachability.m */; };
+		7A4570C68A856310BB445F15 /* Pods_BACtrack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C36AD0364FB085F86AD8090E /* Pods_BACtrack.framework */; };
 		925C518220D078BD00A22D1F /* BacTrackAPI_Skyn.m in Sources */ = {isa = PBXBuildFile; fileRef = 925C518120D078BD00A22D1F /* BacTrackAPI_Skyn.m */; };
 		92CF904918C92F12001F1EE0 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CF904818C92F12001F1EE0 /* XCTest.framework */; };
 		92CF904A18C92F12001F1EE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CF903A18C92F12001F1EE0 /* Foundation.framework */; };
@@ -73,6 +74,7 @@
 		5657A9161C6EB5F0006FAF9B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		5657A9191C6EB6C3006FAF9B /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = SOURCE_ROOT; };
 		5657A91A1C6EB6C3006FAF9B /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = SOURCE_ROOT; };
+		6681D7BA9F081EAF869532CC /* Pods-BACtrack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BACtrack.release.xcconfig"; path = "Target Support Files/Pods-BACtrack/Pods-BACtrack.release.xcconfig"; sourceTree = "<group>"; };
 		925C518120D078BD00A22D1F /* BacTrackAPI_Skyn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BacTrackAPI_Skyn.m; sourceTree = "<group>"; };
 		925C518320D078FF00A22D1F /* BacTrackAPI_Skyn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BacTrackAPI_Skyn.h; sourceTree = "<group>"; };
 		92CF903718C92F12001F1EE0 /* libBACtrack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBACtrack.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,8 +148,10 @@
 		93BA80411BDFE89100A8590E /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Globals.h; sourceTree = SOURCE_ROOT; };
 		93BA80421BDFE89100A8590E /* Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Helper.h; sourceTree = SOURCE_ROOT; };
 		93BA80431BDFE89100A8590E /* Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Helper.m; sourceTree = SOURCE_ROOT; };
+		B90702D79BCDCDCB0A858F1E /* Pods-BACtrack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BACtrack.debug.xcconfig"; path = "Target Support Files/Pods-BACtrack/Pods-BACtrack.debug.xcconfig"; sourceTree = "<group>"; };
 		BF01F7122362265A0071923B /* BacTrackAPI_MobileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BacTrackAPI_MobileV2.h; sourceTree = "<group>"; };
 		BF01F7132362265A0071923B /* BacTrackAPI_MobileV2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BacTrackAPI_MobileV2.m; sourceTree = "<group>"; };
+		C36AD0364FB085F86AD8090E /* Pods_BACtrack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BACtrack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5657A9171C6EB5F0006FAF9B /* SystemConfiguration.framework in Frameworks */,
+				7A4570C68A856310BB445F15 /* Pods_BACtrack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +178,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		10FF11FBD836210C406908DA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B90702D79BCDCDCB0A858F1E /* Pods-BACtrack.debug.xcconfig */,
+				6681D7BA9F081EAF869532CC /* Pods-BACtrack.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		372811BC1F55E9B30073AB8F /* C6_C8 */ = {
 			isa = PBXGroup;
 			children = (
@@ -197,6 +212,7 @@
 				92CFD53818C93104001F1EE0 /* BACTrackAPI */,
 				92CF903918C92F12001F1EE0 /* Frameworks */,
 				92CF903818C92F12001F1EE0 /* Products */,
+				10FF11FBD836210C406908DA /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -216,6 +232,7 @@
 				92CF903A18C92F12001F1EE0 /* Foundation.framework */,
 				92CF904818C92F12001F1EE0 /* XCTest.framework */,
 				92CF904B18C92F12001F1EE0 /* UIKit.framework */,
+				C36AD0364FB085F86AD8090E /* Pods_BACtrack.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -410,6 +427,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 92CF905A18C92F12001F1EE0 /* Build configuration list for PBXNativeTarget "BACtrack" */;
 			buildPhases = (
+				1F701EDB18937EFFC8DCC19D /* [CP] Check Pods Manifest.lock */,
 				92CF903318C92F12001F1EE0 /* Sources */,
 				92CF903418C92F12001F1EE0 /* Frameworks */,
 				92CF903518C92F12001F1EE0 /* CopyFiles */,
@@ -483,6 +501,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1F701EDB18937EFFC8DCC19D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BACtrack-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		92CFD58C18C937C9001F1EE0 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -612,6 +652,7 @@
 		};
 		92CF905B18C92F12001F1EE0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B90702D79BCDCDCB0A858F1E /* Pods-BACtrack.debug.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/BACtrack_SDK.dst;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -639,6 +680,7 @@
 		};
 		92CF905C18C92F12001F1EE0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6681D7BA9F081EAF869532CC /* Pods-BACtrack.release.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/BACtrack_SDK.dst;
 				FRAMEWORK_SEARCH_PATHS = (
