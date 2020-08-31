@@ -94,8 +94,7 @@ Pod::Spec.new do |spec|
   # spec.source_files  = "bactrack-ios-sdk/**/*.{h,m}"
   spec.source_files  = "**/*.{h,m}"
   # spec.exclude_files = "Classes/Exclude"
-  # spec.exclude_files = "BACtrackReactBLEManager.h"
-
+  spec.exclude_files = ["React/**/*", "Distribution/**/*", "Pods/**/*"]
   # spec.public_header_files = "Classes/**/*.h"
 
 
