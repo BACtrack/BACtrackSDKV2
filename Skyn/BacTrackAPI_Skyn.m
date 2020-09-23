@@ -95,8 +95,29 @@
     return isConnectedOrConnecting;
 }
 
+- (void)disconnect
+{
+    const Byte disconnectMsg[] = {0x07};
+    NSData *data = [NSData dataWithBytes:&disconnectMsg length:1];
+    [mPeripheral writeValue:data forCharacteristic:mCharacteristicSerialTx type:CBCharacteristicWriteWithResponse];
+
+    mPeripheral = nil;
+}
+
 -(void)peripheralDisconnected:(CBPeripheral*)peripheral
 {
+    mPeripheral = nil;
+    mServiceSerial = nil;
+    mServiceVersions = nil;
+    mCharacteristicSerialRx = nil;
+    mCharacteristicSerialTx = nil;
+    mCharacteristicFirmwareRevision = nil;
+    mCharacteristicHardwareRevision = nil;
+    mCharacteristicSerialNumber = nil;
+    mBatchResults = nil;
+    mFilePath = nil;
+    mCalibrationPoints = nil;
+    mChunkSamplePoints = nil;
 }
 
 -(void) parseRecords:(Byte *)bytes length:(NSUInteger)length

@@ -82,7 +82,12 @@ typedef NS_ENUM(NSInteger, BACtrackReturnType) {
 -(void)BacTrackResults:(CGFloat)bac;
 
 // Found a breathalyzer
--(void)BacTrackFoundBreathalyzer:(Breathalyzer*)breathalyzer;
+// Use BacTrackFoundBreathalyzer:willAutomaticallyConnect: instead. The older function will only be called
+// when connecting to an *explicit* device and not just the nearest. With the newer callback, apps using
+// nearest modes will be informed after the device has been discovered but before the connection has
+// been fully negotiated.
+-(void)BacTrackFoundBreathalyzer:(Breathalyzer*)breathalyzer __attribute__((deprecated));
+-(void)BacTrackFoundBreathalyzer:(Breathalyzer*)breathalyzer willAutomaticallyConnect:(BOOL)automaticallyConnect;
 
 // Returns an integer value representing the number of times the device has been used
 -(void)BacTrackUseCount:(NSNumber*)number;
@@ -192,6 +197,8 @@ typedef NS_ENUM(NSInteger, BACtrackReturnType) {
 
 
 // Skyn callbacks:
+
+- (void)BacTrackSkynFoundDevice;
 
 - (void)BacTrackSkynBatchResults:(NSDictionary *)results;
 

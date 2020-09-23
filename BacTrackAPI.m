@@ -793,6 +793,9 @@
             foundBreathalyzers = [NSMutableArray array];
         [foundBreathalyzers addObject:breathalyzer];
 
+        if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:willAutomaticallyConnect:)])
+            [self.delegate BacTrackFoundBreathalyzer:breathalyzer willAutomaticallyConnect:connectToNearest];
+
         if (connectToNearest) {
             if (!nearestBreathalyzerTimer) {
                 nearestBreathalyzerTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(returnNearestBreathalyzer) userInfo:nil repeats:NO];
@@ -884,6 +887,8 @@
             if ([characteristic isEqual:characteristic_serial_number]) {
                 if([peripheral.name isEqualToString: @"Skyn"])
                 {
+                    if ([self.delegate respondsToSelector:@selector(BacTrackSkynFoundDevice)])
+                        [self.delegate BacTrackSkynFoundDevice];
                     [self setupSkyn:peripheral];
                 }
                 
