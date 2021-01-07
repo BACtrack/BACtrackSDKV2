@@ -34,6 +34,8 @@
 // Scan for Skyn BacTrack devices
 -(void)scanForSkyn;
 
+-(void)toggleRealTimeForSkyn:(BOOL)toggle;
+
 // Stop scanning for BacTrack and Skyn breathalyzers
 -(void)stopScan;
 
