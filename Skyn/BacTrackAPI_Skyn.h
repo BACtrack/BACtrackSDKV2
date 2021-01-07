@@ -18,5 +18,6 @@
 - (void) fetchRecords;
 - (void) startSync;
 - (void) discardFetchedRecords;
+- (void) setRealTimeModeEnabled:(bool)enabled;
 
 @end

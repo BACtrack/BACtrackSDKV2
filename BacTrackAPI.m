@@ -219,6 +219,11 @@
     [cmanager scanForPeripheralsWithServices:scanUdids options:0];
 }
 
+-(void)toggleRealTimeForSkyn:(BOOL)toggle
+{
+    [mSkynApi setRealTimeModeEnabled:toggle];
+}
+
 -(void)stopScan
 {
     shouldBeScanning = NO;
