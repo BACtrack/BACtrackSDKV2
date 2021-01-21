@@ -565,6 +565,7 @@
                 mCharacteristicSerialTx = characteristic;
         }
         [mPeripheral setNotifyValue:YES forCharacteristic:mCharacteristicSerialRx];
+        [mPeripheral setNotifyValue:YES forCharacteristic:mCharacteristicSerialTx];
     }
     else if (service==mServiceVersions) {
         for(CBCharacteristic *characteristic in service.characteristics) {
