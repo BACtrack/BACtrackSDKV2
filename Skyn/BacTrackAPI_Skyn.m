@@ -69,7 +69,7 @@
     return self;
 }
 
-- (void) configurePeripheral
+- (void)configurePeripheral
 {
     if (![self isConnectedOrConnecting]) {
         return;
@@ -120,7 +120,7 @@
     mChunkSamplePoints = nil;
 }
 
--(void) parseRecords:(Byte *)bytes length:(NSUInteger)length
+-(void)parseRecords:(Byte *)bytes length:(NSUInteger)length
 {
     const Byte TIMESTAMP_AND_SAMPLE_RATE = 0x0;
     const Byte SENSOR_DATA = 0x1;
@@ -364,6 +364,11 @@
         NSString *serialNumber = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
         if ([self.delegate respondsToSelector:@selector(BacTrackSerial:)])
             [self.delegate BacTrackSerial:serialNumber];
+    }
+    else if (characteristic == mCharacteristicSerialTx)
+    {
+        if ([self.delegate respondsToSelector:@selector(BacTrackSkynSyncRequest)])
+            [self.delegate BacTrackSkynSyncRequest];
     }
 }
 

@@ -219,5 +219,7 @@ typedef NS_ENUM(NSInteger, BACtrackReturnType) {
 
 - (void)BacTrackAuthenticationIsInsufficientError;
 
+- (void)BacTrackSkynSyncRequest;
+
 @end
 
