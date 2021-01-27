@@ -152,11 +152,9 @@
         connectToNearest = NO;
        
         [self loadProtocolSelectors];
-        connectedPeripherals = [[NSMutableDictionary alloc] initWithCapacity:1];
-        connectedAPIEndpoints = [[NSMutableDictionary alloc] initWithCapacity:1];
-        cmanager = [[CBCentralManager alloc] initWithDelegate:self
-                                                           queue:nil
-                                                         options:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:CBCentralManagerOptionShowPowerAlertKey]];
+        connectedPeripherals = [[NSMutableDictionary alloc] initWithCapacity: 1];
+        connectedAPIEndpoints = [[NSMutableDictionary alloc] initWithCapacity: 1];
+        cmanager = [[CBCentralManager alloc] initWithDelegate: self queue: nil options: @{ CBCentralManagerOptionRestoreIdentifierKey: @"com.bactrack.centralmanager", CBCentralManagerOptionShowPowerAlertKey: @(NO)}];
         
         NSLog(@"%@: CBCentralManager initialized", self.class.description);
     }
@@ -631,6 +629,9 @@
 /****************************************************************************/
 /*			     CBCentralManagerDelegate protocol methods beneeth here     */
 /****************************************************************************/
+
+- (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary<NSString *,id> *)dict {
+}
 
 - (void) centralManagerDidUpdateState:(CBCentralManager *)central
 {
