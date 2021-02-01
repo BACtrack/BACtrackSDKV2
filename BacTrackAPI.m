@@ -800,7 +800,7 @@
     [self getDiscoveredBreathalyzerType:breathalyzer withServices:[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"]];
 
     // Listen for Skyn Specific Notifications
-    if ([[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"] containsObject:SKYN_SERIAL_GATT_TX_CHAR_UUID])
+    if ([[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"] containsObject: [CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]])
     {
         if ([self.delegate respondsToSelector:@selector(BacTrackSkynSyncRequest)])
             [self.delegate BacTrackSkynSyncRequest];
