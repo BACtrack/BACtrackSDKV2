@@ -217,6 +217,11 @@
     [cmanager scanForPeripheralsWithServices:scanUdids options:0];
 }
 
+-(void)searchForSkyn
+{
+    [cmanager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]] options:0];
+}
+
 -(void)toggleRealTimeForSkyn:(BOOL)toggle
 {
     [mSkynApi setRealTimeModeEnabled:toggle];
@@ -631,6 +636,7 @@
 /****************************************************************************/
 
 - (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary<NSString *,id> *)dict {
+    // Not required to be implemented for our use cases. But required by the framework when using background modes.
 }
 
 - (void) centralManagerDidUpdateState:(CBCentralManager *)central
@@ -792,7 +798,14 @@
     breathalyzer.uuid = peripheral.identifier.UUIDString;
     
     [self getDiscoveredBreathalyzerType:breathalyzer withServices:[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"]];
-    
+
+    // Listen for Skyn Specific Notifications
+    if ([[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"] containsObject: [CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]])
+    {
+        if ([self.delegate respondsToSelector:@selector(BacTrackSkynSyncRequest)])
+            [self.delegate BacTrackSkynSyncRequest];
+    }
+
     if(breathalyzer.type != BACtrackDeviceType_Unknown)
     {
         if (!foundBreathalyzers)
