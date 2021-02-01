@@ -33,6 +33,7 @@
 -(void)startScan;
 // Scan for Skyn BacTrack devices
 -(void)scanForSkyn;
+-(void)searchForSkyn;
 
 -(void)toggleRealTimeForSkyn:(BOOL)toggle;
 
