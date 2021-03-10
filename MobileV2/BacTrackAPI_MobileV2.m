@@ -285,12 +285,7 @@
         val[1] = 0x02;
         
         NSData *data = [NSData dataWithBytes:&val length:2];
-        @try {
-            [bacTrack writeValue:data forCharacteristic:charGenericRx type:CBCharacteristicWriteWithResponse];
-        } @catch (NSException *exception) {
-            //some error
-            [delegate someerrorhappens:message]
-        }
+        [bacTrack writeValue:data forCharacteristic:charGenericRx type:CBCharacteristicWriteWithResponse];
         
     }
     else
