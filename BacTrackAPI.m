@@ -485,6 +485,12 @@
         else
             [self startScan];
         connectToNearest = YES;
+    } else if (cmanager.state == CBManagerStateUnauthorized) {
+      NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+      [errorDetail setValue:@"The app is not allowed to use bluetooth" forKey:NSLocalizedDescriptionKey];
+      NSError *error = [NSError errorWithDomain:@"Bluetooth Error" code:100 userInfo:errorDetail];
+      if ([self.delegate respondsToSelector:@selector(BacTrackError:)])
+          [self.delegate BacTrackError:error];
     }
     else
     {

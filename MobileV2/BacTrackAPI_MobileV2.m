@@ -286,6 +286,7 @@
         
         NSData *data = [NSData dataWithBytes:&val length:2];
         [bacTrack writeValue:data forCharacteristic:charGenericRx type:CBCharacteristicWriteWithResponse];
+        
     }
     else
     {
