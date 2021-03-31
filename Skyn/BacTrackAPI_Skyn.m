@@ -650,7 +650,6 @@
 
         // Discover characteristics of found services
         for (CBService * service in mPeripheral.services) {
-            
             // Save service one
             if ([service.UUID isEqual:[CBUUID UUIDWithString:SKYN_SERIAL_GATT_SERVICE_UUID]]) {
                 mServiceSerial = service;
