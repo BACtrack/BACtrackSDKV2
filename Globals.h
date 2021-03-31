@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, BACtrackDeviceType) {
     BACtrackDeviceType_C6,
     BACtrackDeviceType_C8,
     BACtrackDeviceType_Skyn,
+    BACtrackDeviceType_SkynBackground,  // This reports its type as Skyn once discovered
     BACtrackDeviceType_MobileV2,
     BACtrackDeviceType_Unknown
 };
@@ -70,10 +71,11 @@ typedef enum {
 #define MOBILEV2_GENERIC_GATT_RX_CHAR_UUID @"3CAA1002-0060-4787-9DA2-533C53B399A0"
 
 // Skyn Protocol
-#define SKYN_ADVERTISED_SERVICE_UUID @"e8f90001-0708-430d-93c2-37a17a6191fc"
-#define SKYN_SERIAL_GATT_SERVICE_UUID @"e8f90001-0708-430d-93c2-37a17a6191fc"
-#define SKYN_SERIAL_GATT_TX_CHAR_UUID @"e8f90002-0708-430d-93c2-37a17a6191fc"
-#define SKYN_SERIAL_GATT_RX_CHAR_UUID @"e8f90003-0708-430d-93c2-37a17a6191fc"
+#define SKYN_ADVERTISED_SERVICE_UUID        @"e8f90001-0708-430d-93c2-37a17a6191fc"
+#define SKYN_ADVERTISED_SYNC_SERVICE_UUID   @"e8f90002-0708-430d-93c2-37a17a6191fc"
+#define SKYN_SERIAL_GATT_SERVICE_UUID       @"e8f90001-0708-430d-93c2-37a17a6191fc"
+#define SKYN_SERIAL_GATT_TX_CHAR_UUID       @"e8f90002-0708-430d-93c2-37a17a6191fc"
+#define SKYN_SERIAL_GATT_RX_CHAR_UUID       @"e8f90003-0708-430d-93c2-37a17a6191fc"
 
 
 // Characteristics
@@ -244,6 +246,7 @@ typedef enum {
 #define SKYN_RESULT_KEY_EVENT_CODE              @"event_code"
 #define SKYN_RESULT_KEY_EVENT_PAYLOAD           @"event_payload"
 
+#define SKYN_RESULT_KEY_FIRMWARE                @"firmware"
 
 
 

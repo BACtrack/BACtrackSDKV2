@@ -24,7 +24,6 @@
     CBCharacteristic * mCharacteristicSerialNumber;
     long               mRecordFetchChunkSize;
     long               mTotalNumRecordsToFetch;
-    NSMutableArray   * mBatchResults;
     Boolean            mIsRealTimeMode;
     NSString         * mFilePath;
     int                mWritten;
@@ -32,13 +31,18 @@
     uint32_t           mCounter;
     uint32_t           mCounterWritten;
     int                mNonSamplePointRecordCount;
-    NSMutableDictionary   * mCalibrationPoints;
-    
+    NSString         * mFirmwareVersion;        // last-read firmware revision
+
     // Results are split into chunks that begin at a timestamp and
     // occur at a given samplerate
     uint32_t           mChunkTimestamp;
     uint32_t           mChunkSampleRate;
-    NSMutableArray   * mChunkSamplePoints;
+    
+    // True if we are waiting on the timestamp to say we're connected
+    // This will cause iOS to ask to pair with the device if needed
+    // (read/write from encrypted characteristic forces this. There
+    // is no equivalent CoreBluetooth call)
+    BOOL               mFinalizingConnection;
 }
 
 @property (readwrite)NSString *hardwareRevision;
@@ -69,7 +73,7 @@
     return self;
 }
 
-- (void)configurePeripheral
+- (void) configurePeripheral
 {
     if (![self isConnectedOrConnecting]) {
         return;
@@ -120,7 +124,7 @@
     mChunkSamplePoints = nil;
 }
 
--(void)parseRecords:(Byte *)bytes length:(NSUInteger)length
+-(void) parseRecords:(Byte *)bytes length:(NSUInteger)length
 {
     const Byte TIMESTAMP_AND_SAMPLE_RATE = 0x0;
     const Byte SENSOR_DATA = 0x1;
@@ -156,14 +160,21 @@
             }
             case SENSOR_DATA:
             {
-                uint16_t alcoholSensorValue = 0;
-                uint16_t temperatureSensorValue = 0;
-                uint16_t accelerationMagnitudeSensorValue = 0;
+                int alcoholSensorValue = 0;
+                int temperatureSensorValue = 0;
+                int accelerationMagnitudeSensorValue = 0;
 
                 // Byte 0 was the record type.
                 // Byte 1 is reserved.
                 // Byte 2-3 is the alcohol sensor value.
+                NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
+                nf.numberStyle = NSNumberFormatterDecimalStyle;
+                NSString *majorFirmwareStr = [[mFirmwareVersion componentsSeparatedByString:@"."] objectAtIndex:0];
+                int majorFirmwareNum = [[nf numberFromString:majorFirmwareStr] intValue];
+
                 alcoholSensorValue = (record[2]&0xff) + ((record[3]&0xff)<<8);
+                if (majorFirmwareNum >= 4 && (alcoholSensorValue & 0x80))   // T15 uses signed values
+                    alcoholSensorValue = alcoholSensorValue - 0x10000;
                 // Byte 4-5 is the temp sensor value.
                 temperatureSensorValue = (record[4]&0xff) + ((record[5]&0xff)<<8);
                 // Byte 6-7 is the accel sensor value.
@@ -264,6 +275,16 @@
                             + ((msg[3]&0xff)<<16)
                             + ((msg[4]&0xff)<<24);
                 // This is not part of the record stream; it is the device's reply when we ask what its current timestamp is
+
+                if (mFinalizingConnection)
+                {
+                    mFinalizingConnection = NO;
+                    if ([self.delegate respondsToSelector:@selector(BacTrackConnected:)])
+                        [self.delegate BacTrackConnected:self.type];
+                    else if ([self.delegate respondsToSelector:@selector(BacTrackConnected)])
+                        [self.delegate BacTrackConnected];
+                }
+                
                 break;
             }
                 
@@ -347,10 +368,10 @@
     }
     else if (characteristic == mCharacteristicFirmwareRevision)
     {
-        NSString *firmwareVersion = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
+        mFirmwareVersion = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];;
         // TODO: I don't know why it's this layer's job to do the "isNewer" comparison, but this might need to happen at some point
         if ([self.delegate respondsToSelector:@selector(BacTrackFirmwareVersion:isNewer:)])
-            [self.delegate BacTrackFirmwareVersion:firmwareVersion isNewer:NO];
+            [self.delegate BacTrackFirmwareVersion:mFirmwareVersion isNewer:NO];
     }
     else if (characteristic == mCharacteristicHardwareRevision)
     {
@@ -403,28 +424,36 @@
             if (syncForPower)
             {
                 // The very next record MUST be a good timestamp, as specced (p15)
-                NSDictionary *timestampEvent = results[++i];
-                NSString *recordType = timestampEvent[SKYN_RESULT_KEY_RECORD_TYPE];
-                if ([recordType isEqualToString:SKYN_RECORD_TYPE_TIMINGINFO])
+                if (++i < [results count])
                 {
-                    uint32_t badTimestamp = (uint32_t)[syncForPower[SKYN_RESULT_KEY_TIMESTAMP] integerValue];
-                    uint32_t goodTimestamp = (uint32_t)[timestampEvent[SKYN_RESULT_KEY_TIMESTAMP] integerValue];
-                    uint32_t delta = goodTimestamp - badTimestamp;
-                    for (int j=powerEventIdx+1; j < i; j++)
+                    NSDictionary *timestampEvent = results[i];
+                    NSString *recordType = timestampEvent[SKYN_RESULT_KEY_RECORD_TYPE];
+                    if ([recordType isEqualToString:SKYN_RECORD_TYPE_TIMINGINFO])
                     {
-                        NSMutableDictionary *md = [results[j] mutableCopy];
-                        recordType = md[SKYN_RESULT_KEY_RECORD_TYPE];
-                        if ([recordType isEqualToString:SKYN_RECORD_TYPE_SENSORCHUNK])
+                        uint32_t badTimestamp = (uint32_t)[syncForPower[SKYN_RESULT_KEY_TIMESTAMP] integerValue];
+                        uint32_t goodTimestamp = (uint32_t)[timestampEvent[SKYN_RESULT_KEY_TIMESTAMP] integerValue];
+                        uint32_t delta = goodTimestamp - badTimestamp;
+                        for (int j=powerEventIdx+1; j < i; j++)
                         {
-                            uint32_t ts = [md[SKYN_RESULT_KEY_TIMESTAMP] unsignedIntValue] + delta;
-                            md[SKYN_RESULT_KEY_TIMESTAMP] = [NSNumber numberWithUnsignedInt:ts];
-                            results[j] = md;
+                            NSMutableDictionary *md = [results[j] mutableCopy];
+                            recordType = md[SKYN_RESULT_KEY_RECORD_TYPE];
+                            if ([recordType isEqualToString:SKYN_RECORD_TYPE_SENSORCHUNK])
+                            {
+                                uint32_t ts = [md[SKYN_RESULT_KEY_TIMESTAMP] unsignedIntValue] + delta;
+                                md[SKYN_RESULT_KEY_TIMESTAMP] = [NSNumber numberWithUnsignedInt:ts];
+                                results[j] = md;
+                            }
                         }
+                    }
+                    else
+                    {
+                        NSLog(@"Failed to recover timestamps: Expected valid TIMINGINFO immediately after TIME_SYNC!");
                     }
                 }
                 else
                 {
-                    NSLog(@"Failed to recover timestamps: Two contiguous events after power recovery are required!");
+                    // Deals with T1557: device did not appear to send valid data
+                    NSLog(@"Failed to recover timestamps: TIME_SYNC is last event in batch!");
                 }
             }
         }
@@ -460,7 +489,9 @@
         [self.delegate BacTrackSkynFinishedRecordBatch:YES];
     
     NSDictionary *fullResults = @{SKYN_RESULT_KEY_CALIBRATION: [mCalibrationPoints copy],
-                                  SKYN_RESULT_KEY_RECORDS: [mBatchResults copy]};
+                                  SKYN_RESULT_KEY_RECORDS: [mBatchResults copy],
+                                  SKYN_RESULT_KEY_FIRMWARE: [mFirmwareVersion copy]
+    };
     
     if ([self.delegate respondsToSelector:@selector(BacTrackSkynBatchResults:)])
         [self.delegate BacTrackSkynBatchResults:fullResults];
@@ -475,9 +506,7 @@
 
 -(void)handleBacTrackError:(NSError *) error
 {
-    if (error.code == SKYN_INSUFFICIENT_AUTH_ERROR && [self.delegate respondsToSelector:@selector(BacTrackAuthenticationIsInsufficientError)]) {
-        [self.delegate BacTrackAuthenticationIsInsufficientError];
-    } else if ([self.delegate respondsToSelector:@selector(BacTrackError:)]) {
+    if ([self.delegate respondsToSelector:@selector(BacTrackError:)]) {
         [self.delegate BacTrackError:error];
     }
 }
@@ -517,9 +546,8 @@
     [self requestBatteryInfo];
     [self requestCalibrationPoints:0];
     [self requestCalibrationPoints:1];
-    [self setRealTimeModeEnabled:NO];
+    [self setRealtimeModeEnabled:NO];
 }
-
 
 -(void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
@@ -593,10 +621,9 @@
         && mCharacteristicSerialRx
         && mCharacteristicSerialTx)
     {
-        if ([self.delegate respondsToSelector:@selector(BacTrackConnected:)])
-            [self.delegate BacTrackConnected:self.type];
-        else if ([self.delegate respondsToSelector:@selector(BacTrackConnected)])
-            [self.delegate BacTrackConnected];
+        // Get the current timestamp. This also will bring up the iOS pairing dialog if not yet bonded
+        [self requestTimestamp];
+        mFinalizingConnection = YES;
     }
 }
 
@@ -623,7 +650,7 @@
 
         // Discover characteristics of found services
         for (CBService * service in mPeripheral.services) {
-
+            
             // Save service one
             if ([service.UUID isEqual:[CBUUID UUIDWithString:SKYN_SERIAL_GATT_SERVICE_UUID]]) {
                 mServiceSerial = service;
@@ -706,7 +733,7 @@
     [mPeripheral writeValue:data forCharacteristic:mCharacteristicSerialTx type:CBCharacteristicWriteWithResponse];
 }
 
-- (void) setRealTimeModeEnabled:(bool) enabled
+- (void) setRealtimeModeEnabled:(bool) enabled
 {
     const Byte REAL_TIME_RECORD_MSG = 0x17;
     
@@ -790,66 +817,104 @@
 
 #pragma mark - Testing functions
 
-- (void)generateDebugResults
+#ifdef DEBUG
+
+// Convert a CSV back to the a batch results dictionary to fake in readings. This can aid in reproducing crashes.
+// Note that it does not currently provide correct units, but it will generate timestamped events
+// in the exact order of the original.
+
+// It assumes the default sampling rate of 20
+
+- (NSMutableArray *)csvToDictionary:(NSString*)path
 {
-    [self.delegate BacTrackSkynReceivedRecordCount:6];
+    NSMutableArray *ret = [[NSMutableArray alloc] init];
+    NSError *err;
+    NSString *csvStr = [NSString stringWithContentsOfFile:path encoding:kCFStringEncodingUTF8 error:&err];
+
+    if (!err)
+    {
+        
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+
+        NSNumberFormatter *numFormat = [[NSNumberFormatter alloc] init];
+        numFormat.numberStyle = NSNumberFormatterDecimalStyle;
+        
+        NSArray<NSString*> *csvLines = [csvStr componentsSeparatedByString:@"\n"];
+        bool isHeader = YES;    // first line is header
+        int i = 0;
+        NSInteger lastUnixDate = 0;
+        NSMutableArray *curSamplePoints;
+        NSNumber *firstTimestampOfChunk;
+        for (NSString *csvLine in csvLines)
+        {
+            if (isHeader)
+            {
+                isHeader = NO;
+                i++;
+                continue;
+            }
+            else if ([csvLine length] == 0) // we are done
+            {
+                break;
+            }
+            
+            if (!curSamplePoints)
+                curSamplePoints = [[NSMutableArray alloc] init];
+            
+            NSArray<NSString*> *fields = [csvLine componentsSeparatedByString:@","];
+            NSDate *date = [dateFormatter dateFromString:fields[0]];
+            NSInteger unixDate;
+            if (date)
+            {
+                unixDate = [date timeIntervalSince1970];
+                if (!firstTimestampOfChunk)
+                    firstTimestampOfChunk = [NSNumber numberWithInteger:unixDate];
+            }
+            else
+            {
+                NSLog(@"Could not parse date on line %d. Aborted.", i);
+                return nil;
+            }
+            
+            // If over ~20 seconds (default sample rate) has elapsed between this line and the last,
+            // start a new chunk
+            if (lastUnixDate && (unixDate - lastUnixDate) > 21)
+            {
+                NSDictionary *entry = @{@"record_type": @"sensor_chunk",
+                                        @"sample_points": curSamplePoints,
+                                        @"samplerate": @20,
+                                        @"timestamp": firstTimestampOfChunk
+                };
+                [ret addObject:entry];
+                curSamplePoints = nil;
+                firstTimestampOfChunk = nil;
+            }
+
+            [curSamplePoints addObject:@[@0, @1, @2]];
+            lastUnixDate = unixDate;
+
+            i++;
+        } // end for each line
+
+        // Add final chunk
+        NSDictionary *entry = @{@"record_type": @"sensor_chunk",
+                                @"sample_points": curSamplePoints,
+                                @"samplerate": @20,
+                                @"timestamp": firstTimestampOfChunk
+        };
+        [ret addObject:entry];
+    }
+    else
+    {
+        NSLog(@"csvToDictionary: %@", err);
+    }
     
-    NSArray *pt = @[[NSNumber numberWithInt:1],
-                             [NSNumber numberWithInt:2],
-                             [NSNumber numberWithInt:3]];
-
-    mCalibrationPoints[SKYN_RESULT_KEY_CALIBRATION_VERSION] = [NSNumber numberWithInt:0];
-    mCalibrationPoints[SKYN_RESULT_KEY_CALIBRATION_CONCENTRATION_HIGH] = [NSNumber numberWithFloat:1.0];
-    mCalibrationPoints[SKYN_RESULT_KEY_CALIBRATION_CONCENTRATION_LOW] = [NSNumber numberWithFloat:1.0];
-    mCalibrationPoints[SKYN_RESULT_KEY_TIMESTAMP] = [NSNumber numberWithInt:1572276369];
-    mCalibrationPoints[SKYN_RESULT_KEY_CALIBRATION_HIGH] = [NSNumber numberWithInt:2];
-    mCalibrationPoints[SKYN_RESULT_KEY_CALIBRATION_LOW] = [NSNumber numberWithInt:3];
-
-
-    [self startNewSkynChunkAtTimestamp:100 andSampleRate:20];
-    [mChunkSamplePoints addObject:pt];
-    [mChunkSamplePoints addObject:pt];
-    
-    [self saveSkynChunk];
-    [mBatchResults addObject:@{SKYN_RESULT_KEY_RECORD_TYPE: SKYN_RECORD_TYPE_EVENT,
-                              SKYN_RESULT_KEY_EVENT_CODE: [NSNumber numberWithInt:SKYN_EVENT_CODE_POWER_RESTORED],
-                              SKYN_RESULT_KEY_EVENT_PAYLOAD: @0,
-                              SKYN_RESULT_KEY_TIMESTAMP: @0
-    }];
-    [self saveSkynChunk];
-    [mBatchResults addObject:@{SKYN_RESULT_KEY_RECORD_TYPE: SKYN_RECORD_TYPE_TIMINGINFO,
-                              SKYN_RESULT_KEY_SAMPLERATE: @20,
-                              SKYN_RESULT_KEY_TIMESTAMP: @20    // "invalid" timestamp
-    }];
-    [self startNewSkynChunkAtTimestamp:20 andSampleRate:20];
-    [mChunkSamplePoints addObject:pt];
-    [mChunkSamplePoints addObject:pt];
-    
-    [self saveSkynChunk];
-    [mBatchResults addObject:@{SKYN_RESULT_KEY_RECORD_TYPE: SKYN_RECORD_TYPE_EVENT,
-                              SKYN_RESULT_KEY_EVENT_CODE: [NSNumber numberWithInt:SKYN_EVENT_CODE_TIME_SYNC],
-                              SKYN_RESULT_KEY_EVENT_PAYLOAD: @0,
-                              SKYN_RESULT_KEY_TIMESTAMP: @57
-    }];
-    [self saveSkynChunk];
-    [mBatchResults addObject:@{SKYN_RESULT_KEY_RECORD_TYPE: SKYN_RECORD_TYPE_TIMINGINFO,
-                              SKYN_RESULT_KEY_SAMPLERATE: @20,
-                              SKYN_RESULT_KEY_TIMESTAMP: @1572286369    // "good" timestamp for time sync event
-    }];
-    [self saveSkynChunk];
-    [mBatchResults addObject:@{SKYN_RESULT_KEY_RECORD_TYPE: SKYN_RECORD_TYPE_TIMINGINFO,
-                              SKYN_RESULT_KEY_SAMPLERATE: @20,
-                              SKYN_RESULT_KEY_TIMESTAMP: @1572286372    // "good" timestamp for next batch
-    }];
-
-    [self startNewSkynChunkAtTimestamp:1572286372 andSampleRate:20];    // Timestamp for sampling period boundary
-    [mChunkSamplePoints addObject:pt];
-    [mChunkSamplePoints addObject:pt];
-    [self saveSkynChunk];
-
-    [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(handleFinishedRecordBatch) userInfo:nil repeats:NO];
+    return ret;
 }
 
-
+#endif
 
 @end
