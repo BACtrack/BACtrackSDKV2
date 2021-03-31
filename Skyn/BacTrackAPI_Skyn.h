@@ -9,7 +9,11 @@
 #import "BacTrackAPIDelegate.h"
 
 @interface BacTrackAPI_Skyn : NSObject
-
+{
+    NSMutableArray   * mBatchResults;
+    NSMutableDictionary   * mCalibrationPoints;
+    NSMutableArray   * mChunkSamplePoints;
+}
 @property id <BacTrackAPIDelegate> delegate;
 @property BACtrackDeviceType type;
 
@@ -18,6 +22,14 @@
 - (void) fetchRecords;
 - (void) startSync;
 - (void) discardFetchedRecords;
-- (void) setRealTimeModeEnabled:(bool)enabled;
+- (void) setRealtimeModeEnabled:(BOOL)isEnabled;   // Turned off automatically on startSync
+
+#ifdef DEBUG
+// Exposure for unit tests (TODO: move to a private interface file to reduce clutter)
+- (void) fixTimestamps;
+- (void) startNewSkynChunkAtTimestamp:(uint32_t)ts andSampleRate:(uint32_t)sR;
+- (void) saveSkynChunk;
+- (void) handleFinishedRecordBatch;
+#endif
 
 @end

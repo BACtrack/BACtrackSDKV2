@@ -48,7 +48,12 @@
     NSArray *passthroughSelectors;
     NSMutableDictionary *connectedPeripherals;
     NSMutableDictionary *connectedAPIEndpoints;
-    
+
+    // The disconnectList is created to deal with CoreBluetooth state restorations: if
+    // the application is terminated and Skyn is connected, SKYN_ADVERTISED_SYNC_SERVICE_UUID
+    // will never ping us again unless we disconnect first
+    NSArray          * disconnectList;
+
     BacTrackAPI_Skyn    *mSkynApi; //TODO: use currentAPIEndpoint instead of member variable
 }
 
@@ -152,9 +157,18 @@
         connectToNearest = NO;
        
         [self loadProtocolSelectors];
-        connectedPeripherals = [[NSMutableDictionary alloc] initWithCapacity: 1];
-        connectedAPIEndpoints = [[NSMutableDictionary alloc] initWithCapacity: 1];
-        cmanager = [[CBCentralManager alloc] initWithDelegate: self queue: nil options: @{ CBCentralManagerOptionRestoreIdentifierKey: @"com.bactrack.centralmanager", CBCentralManagerOptionShowPowerAlertKey: @(NO)}];
+        connectedPeripherals = [[NSMutableDictionary alloc] initWithCapacity:1];
+        connectedAPIEndpoints = [[NSMutableDictionary alloc] initWithCapacity:1];
+
+        NSMutableDictionary *dict = [@{CBCentralManagerOptionShowPowerAlertKey: @0} mutableCopy];
+        
+        NSArray<NSString*> *bgModes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+        if ([bgModes containsObject:@"bluetooth-central"])
+            [dict setValue:@"bactracksdk" forKey:CBCentralManagerOptionRestoreIdentifierKey];
+        
+        cmanager = [[CBCentralManager alloc] initWithDelegate:self
+                                                        queue:nil
+                                                      options:dict];
         
         NSLog(@"%@: CBCentralManager initialized", self.class.description);
     }
@@ -190,13 +204,16 @@
     shouldBeScanning = YES;
     connectToNearest = NO;
     
+    // Defaults to breathalyzers if scanUdids not set
     if(scanUdids == nil)
+    {
         scanUdids = @[
                       [CBUUID UUIDWithString:MOBILE__BACTRACK_SERVICE_ONE],
                       [CBUUID UUIDWithString:VIO_BACTRACK_SERVICE_ONE],
                       [CBUUID UUIDWithString:C6_ADVERTISED_SERVICE_UUID],
                       [CBUUID UUIDWithString:MOBILEV2_ADVERTISED_SERVICE_UUID]
                       ];
+    }
 
     // Start scanning for BACTrack
     [cmanager scanForPeripheralsWithServices:scanUdids options:0];
@@ -206,31 +223,32 @@
 {
     [foundBreathalyzers removeAllObjects];
     shouldBeScanning = YES;
-    connectToNearest = NO;
     
-    if(scanUdids == nil)
-        scanUdids = @[
-                      [CBUUID UUIDWithString:SKYN_ADVERTISED_SERVICE_UUID],
-                      ];
+    scanUdids = @[
+                  [CBUUID UUIDWithString:SKYN_ADVERTISED_SERVICE_UUID],
+                  ];
 
     // Start scanning for BACTrack
     [cmanager scanForPeripheralsWithServices:scanUdids options:0];
 }
 
--(void)searchForSkyn
+- (void)beginSkynBackgroundMode
 {
-    [cmanager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]] options:0];
-}
+    [foundBreathalyzers removeAllObjects];
+    shouldBeScanning = YES;
+    
+    scanUdids = @[
+                  [CBUUID UUIDWithString:SKYN_ADVERTISED_SYNC_SERVICE_UUID],
+                  ];
 
--(void)toggleRealTimeForSkyn:(BOOL)toggle
-{
-    [mSkynApi setRealTimeModeEnabled:toggle];
+    [cmanager scanForPeripheralsWithServices:scanUdids options:0];
 }
 
 -(void)stopScan
 {
     shouldBeScanning = NO;
     connectToNearest = NO;
+    scanUdids = nil;
     
     [cmanager stopScan];
 }
@@ -243,7 +261,8 @@
     connectingToBreathalyzer = breathalyzer;
     [cmanager connectPeripheral:breathalyzer.peripheral options:nil];
     // Set the timeout
-    timer = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(connectTimeout) userInfo:nil repeats:NO];
+    if (timeout >= 0)
+        timer = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(connectTimeout) userInfo:nil repeats:NO];
 #else
     if ([[[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys] containsObject:@"BACTRACK_API_USE_APPROVED"])
     {
@@ -275,7 +294,8 @@
     connectingToBreathalyzer = breathalyzer;
     [cmanager connectPeripheral:breathalyzer.peripheral options:nil];
     // Set the timeout
-    timer = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(connectTimeout) userInfo:nil repeats:NO];
+    if (timeout >= 0)
+        timer = [NSTimer scheduledTimerWithTimeInterval:timeout target:self selector:@selector(connectTimeout) userInfo:nil repeats:NO];
 #endif
 
 }
@@ -309,6 +329,10 @@
 
         case BACtrackDeviceType_Skyn:
             scanUdids = @[[CBUUID UUIDWithString:SKYN_ADVERTISED_SERVICE_UUID]];
+            break;
+
+        case BACtrackDeviceType_SkynBackground:
+            scanUdids = @[[CBUUID UUIDWithString:SKYN_ADVERTISED_SYNC_SERVICE_UUID]];
             break;
 
         default:
@@ -472,25 +496,20 @@
 
 
 -(void)doConnectToNearestBreathalyzerWithSkynMode:(BOOL)isSkynMode
-{
-    NSLog(@"cmanger.state: %ld", (long)cmanager.state);
+{    
     if(cmanager.state == CBCentralManagerStatePoweredOn)
     {
         [nearestBreathalyzerTimer invalidate];
         nearestBreathalyzerTimer = nil;
         
         [self stopScan];
+        scanUdids = nil;
+
         if (isSkynMode)
             [self scanForSkyn];
         else
             [self startScan];
         connectToNearest = YES;
-    } else if (cmanager.state == CBManagerStateUnauthorized) {
-      NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-      [errorDetail setValue:@"The app is not allowed to use bluetooth" forKey:NSLocalizedDescriptionKey];
-      NSError *error = [NSError errorWithDomain:@"Bluetooth Error" code:100 userInfo:errorDetail];
-      if ([self.delegate respondsToSelector:@selector(BacTrackError:)])
-          [self.delegate BacTrackError:error];
     }
     else
     {
@@ -527,6 +546,10 @@
         else if ([services count] >=1
               && [[services objectAtIndex:0] isEqual:[CBUUID UUIDWithString:SKYN_ADVERTISED_SERVICE_UUID]]) {
             breathalyzer.type = BACtrackDeviceType_Skyn;
+        }
+        else if ([services count] >=1
+              && [[services objectAtIndex:0] isEqual:[CBUUID UUIDWithString:SKYN_ADVERTISED_SYNC_SERVICE_UUID]]) {
+            breathalyzer.type = BACtrackDeviceType_Skyn;    // We don't use SkynBackground to report back
         }
         else{
             breathalyzer.type = BACtrackDeviceType_Unknown;
@@ -600,6 +623,11 @@
     [mSkynApi startSync];
 }
 
+-(void)skynSetRealtimeMode:(BOOL)isEnabled
+{
+    [mSkynApi setRealtimeModeEnabled:isEnabled];
+}
+
 - (void) fetchSkynRecords
 {
     [mSkynApi fetchRecords];
@@ -638,12 +666,8 @@
 #pragma mark -
 #pragma mark CBCentralManagerDelegate
 /****************************************************************************/
-/*			     CBCentralManagerDelegate protocol methods beneeth here     */
+/*			     CBCentralManagerDelegate protocol methods beneath here     */
 /****************************************************************************/
-
-- (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary<NSString *,id> *)dict {
-    // Not required to be implemented for our use cases. But required by the framework when using background modes.
-}
 
 - (void) centralManagerDidUpdateState:(CBCentralManager *)central
 {
@@ -652,6 +676,14 @@
     switch ([central state]) {
         case CBCentralManagerStatePoweredOn:
             NSLog(@"%@: Bluetooth is powered on", self.class.description);
+
+            for (CBPeripheral *p in disconnectList)
+            {
+                if (p.state == CBPeripheralStateConnected)
+                    [central cancelPeripheralConnection:p];
+            }
+            disconnectList = nil;
+            
             if (shouldBeScanning) {
                 BOOL connect = connectToNearest;
                 [self startScan];
@@ -758,11 +790,15 @@
     // See centralManager:didDiscoverPeripheral:...
 }
 
--(void)returnNearestBreathalyzer
+- (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary *)state
+{
+    disconnectList = [state[CBCentralManagerRestoredStatePeripheralsKey] copy];
+}
+
+-(void)returnNearestBreathalyzerAndConnect
 {
     [nearestBreathalyzerTimer invalidate];
     nearestBreathalyzerTimer = nil;
-    connectToNearest = NO;
     
     Breathalyzer * breathalyzer;
     for (Breathalyzer * b in foundBreathalyzers) {
@@ -774,11 +810,13 @@
     if (breathalyzer) {
         if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:)])
             [self.delegate BacTrackFoundBreathalyzer:breathalyzer];
+        if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:willAutomaticallyConnect:)])
+            [self.delegate BacTrackFoundBreathalyzer:breathalyzer willAutomaticallyConnect:connectToNearest];
     }
     [self stopScan];
     
+    connectToNearest = NO;
     scanUdids = nil;
-
     connectingToBreathalyzer = breathalyzer;
     
     //consider a delay
@@ -804,29 +842,22 @@
     breathalyzer.uuid = peripheral.identifier.UUIDString;
     
     [self getDiscoveredBreathalyzerType:breathalyzer withServices:[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"]];
-
-    // Listen for Skyn Specific Notifications
-    if ([[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"] containsObject: [CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]])
-    {
-        if ([self.delegate respondsToSelector:@selector(BacTrackSkynSyncRequest)])
-            [self.delegate BacTrackSkynSyncRequest];
-    }
-
+    
     if(breathalyzer.type != BACtrackDeviceType_Unknown)
     {
         if (!foundBreathalyzers)
             foundBreathalyzers = [NSMutableArray array];
         [foundBreathalyzers addObject:breathalyzer];
 
-        if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:willAutomaticallyConnect:)])
-            [self.delegate BacTrackFoundBreathalyzer:breathalyzer willAutomaticallyConnect:connectToNearest];
-
         if (connectToNearest) {
             if (!nearestBreathalyzerTimer) {
-                nearestBreathalyzerTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(returnNearestBreathalyzer) userInfo:nil repeats:NO];
+                // returnNearestBreathalyzer results in the BacTrackFoundBreathalyzer callback
+                nearestBreathalyzerTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(returnNearestBreathalyzerAndConnect) userInfo:nil repeats:NO];
             }
         }
         else {
+            if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:willAutomaticallyConnect:)])
+                [self.delegate BacTrackFoundBreathalyzer:breathalyzer willAutomaticallyConnect:connectToNearest];
             if ([self.delegate respondsToSelector:@selector(BacTrackFoundBreathalyzer:)])
                 [self.delegate BacTrackFoundBreathalyzer:breathalyzer];
         }
@@ -866,6 +897,8 @@
 -(void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
     connectingToBreathalyzer = nil;
+    NSLog(@"Failed to connect to peripheral: %@", error);
+    // TODO: Do we want to inform the delegate of this?
 }
 
 
@@ -960,7 +993,6 @@
     if (!error) {
         NSLog(@"%@: Services of peripheral found", self.class.description);
         for (CBService *service in peripheral.services) {
-            NSLog(@"Discovered service: %@", service.UUID);
             if ([service.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_BACTRACK_SERVICE_VERSIONS]]) {
                 serviceHardwareVersion = service;
 
