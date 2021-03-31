@@ -33,9 +33,8 @@
 -(void)startScan;
 // Scan for Skyn BacTrack devices
 -(void)scanForSkyn;
--(void)searchForSkyn;
-
--(void)toggleRealTimeForSkyn:(BOOL)toggle;
+// Start scanning in background mode
+-(void)beginSkynBackgroundMode;
 
 // Stop scanning for BacTrack and Skyn breathalyzers
 -(void)stopScan;
@@ -48,6 +47,7 @@
 // Connected to breathalyzer. Else timesout after given duration in seconds
 -(void)flashBreathalyzerLEDs:(Breathalyzer*)breathalyzer withTimeout:(NSTimeInterval)timeout;
 
+-(void)skynSetRealtimeMode:(BOOL)isEnabled;
 -(void)fetchSkynRecords;
 -(void)skynStartSync;
 -(void)discardFetchedSkynRecords;
