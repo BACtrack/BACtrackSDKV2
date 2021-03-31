@@ -18,9 +18,9 @@ typedef NS_ENUM(NSInteger, BACtrackDeviceType) {
     BACtrackDeviceType_C6,
     BACtrackDeviceType_C8,
     BACtrackDeviceType_Skyn,
-    BACtrackDeviceType_SkynBackground,  // This reports its type as Skyn once discovered
     BACtrackDeviceType_MobileV2,
-    BACtrackDeviceType_Unknown
+    BACtrackDeviceType_Unknown,
+    BACtrackDeviceType_SkynBackground,  // This reports its type as Skyn once discovered
 };
 
 typedef enum {
