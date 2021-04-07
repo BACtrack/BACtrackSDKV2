@@ -821,7 +821,11 @@
     
     //consider a delay
     NSLog(@"connecting");
-    [cmanager connectPeripheral:breathalyzer.peripheral options:nil];
+
+    // Because if the device is disconnected or reset during the 'connect'
+    if (breathalyzer && breathalyzer.peripheral) {
+      [cmanager connectPeripheral:breathalyzer.peripheral options:nil];
+    }
     
     NSTimeInterval timeout = 12; // Default timeout to 12 seconds
     if ([self.delegate respondsToSelector:@selector(BacTrackGetTimeout)]) {
@@ -835,14 +839,19 @@
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
     
     NSLog(@"%@: Discovered BacTrack Breathalyzer: %@", self.class.description, peripheral.name);
-    
     Breathalyzer * breathalyzer = [Breathalyzer new];
     breathalyzer.peripheral = peripheral;
     breathalyzer.rssi = RSSI;
     breathalyzer.uuid = peripheral.identifier.UUIDString;
     
     [self getDiscoveredBreathalyzerType:breathalyzer withServices:[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"]];
-    
+
+    // Listen for Skyn Specific Notifications
+    if ([[advertisementData objectForKey:@"kCBAdvDataServiceUUIDs"] containsObject: [CBUUID UUIDWithString:SKYN_SERIAL_GATT_TX_CHAR_UUID]]) {
+      if ([self.delegate respondsToSelector:@selector(BacTrackSkynSyncRequest:)])
+        [self.delegate BacTrackSkynSyncRequest:breathalyzer];
+    }
+
     if(breathalyzer.type != BACtrackDeviceType_Unknown)
     {
         if (!foundBreathalyzers)
